@@ -15,7 +15,9 @@ import java.io.StringReader;
 import java.sql.*;
 import java.util.*;
 
-
+/**
+ * 
+ */
 @Path("/users")
 public class UserEndPoint{
     @Path("/{email}")
@@ -44,7 +46,7 @@ public class UserEndPoint{
                     userJson.add("username", JsonValue.NULL);
                 }
 
-                    String profilePicture = rs.getString("profilePicture");
+                String profilePicture = rs.getString("profilePicture");
                 if (profilePicture != null) {
                     userJson.add("profilePicture", profilePicture);
                 }else {
@@ -68,7 +70,7 @@ public class UserEndPoint{
         return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
     }
 
-
+   @Path("/Create")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -76,29 +78,30 @@ public class UserEndPoint{
         try (JsonReader jsonReader = Json.createReader(requestBody)) {
             JsonObject userJson = jsonReader.readObject();
             String email = userJson.getString("email");
-            String password = userJson.getString("password");
+            String password = userJson.getString("passwordHash");
             String username = userJson.getString("username", "default_user");
-            String profilePicture = userJson.getString("profilePicture");
-            String role =  userJson.getString("role", "user");
             //Edit db for serial implementation of ID #
-            String sql = "INSERT INTO users(email, password, username, \"profilePicture\", role) VALUES(?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO users(email, password, username) VALUES(?, ?, ?)";
             try (Connection conn = PostgresConnection.getConnection();) {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, email);
                 stmt.setString(2, BCrypt.hashpw(password, BCrypt.gensalt()));
                 stmt.setString(3, username);
-                stmt.setString(4, profilePicture);
-                stmt.setString(5, role);
                 stmt.executeUpdate();
+            } catch (SQLException e) {  
+                e.printStackTrace();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(Json.createObjectBuilder().add("error", "Database error occurred").build())
+                        .build();
             }
             return Response.status(Response.Status.CREATED)
                     .entity(Json.createObjectBuilder().add("message", "User created successfully").build())
                     .build();
-   }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Json.createObjectBuilder().add("error", "Invalid JSON input").build())
                     .build();
         }
-   }
+    }
 }
