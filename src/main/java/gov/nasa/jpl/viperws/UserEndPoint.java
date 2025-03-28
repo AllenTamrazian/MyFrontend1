@@ -11,59 +11,38 @@ import org.mindrot.jbcrypt.BCrypt; // For password hashing
 import java.io.InputStream;
 import java.sql.*;
 
-/**
- * 
- */
 @Path("/users")
 public class UserEndPoint{
     @Path("/{email}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserByEmail(@PathParam("email") String email) throws SQLException{
-        String selectSql = "SELECT id, email, password, username, \"profilePicture\", role FROM users WHERE email = ?";
-        try (Connection conn = PostgresConnection.getConnection();) {
-            PreparedStatement stmt = conn.prepareStatement(selectSql);
-
+    public Response getUserByEmail(@PathParam("email") String email) throws SQLException {
+        String query = "SELECT 1 FROM users WHERE email = ?";
+        try (Connection conn = PostgresConnection.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                // Create a JSON response object
-                JsonObjectBuilder userJson = Json.createObjectBuilder();
 
-                userJson.add("id", rs.getInt("id"));
-                userJson.add("email", rs.getString("email"));
-                userJson.add("password", rs.getString("password"));
+            boolean exists = rs.next();
 
-                // Handle null values correctly
-                String username = rs.getString("username");
-                if (username != null) {
-                    userJson.add("username", username);
-                } else {
-                    userJson.add("username", JsonValue.NULL);
-                }
+            // Return a JSON object with a boolean field
+            JsonObject result = Json.createObjectBuilder()
+                    .add("exists", exists)
+                    .build();
 
-                String profilePicture = rs.getString("profilePicture");
-                if (profilePicture != null) {
-                    userJson.add("profilePicture", profilePicture);
-                }else {
-                    userJson.add("profilePicture", JsonValue.NULL);
-                }
+            return Response.ok(result.toString(), MediaType.APPLICATION_JSON).build();
 
-                String role = rs.getString("role");
-                if (role != null) {
-                    userJson.add("role", role);
-                } else {
-                    userJson.add("role", JsonValue.NULL);
-                }
-                return Response.ok(userJson.build().toString()).build(); //Return JSON
-
-            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return Response.serverError().entity("Database error: " + e.getMessage()).build();
+            return Response.serverError()
+                    .entity(Json.createObjectBuilder()
+                            .add("error", "Database error")
+                            .add("details", e.getMessage())
+                            .build()
+                            .toString())
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
-
-        return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
     }
 
    @Path("/Create")
@@ -84,7 +63,7 @@ public class UserEndPoint{
                 stmt.setString(2, BCrypt.hashpw(password, BCrypt.gensalt()));
                 stmt.setString(3, username);
                 stmt.executeUpdate();
-            } catch (SQLException e) {  
+            } catch (SQLException e) {
                 e.printStackTrace();
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(Json.createObjectBuilder().add("error", "Database error occurred").build())
@@ -96,7 +75,9 @@ public class UserEndPoint{
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Json.createObjectBuilder().add("error", "Invalid JSON input").build())
+                    .entity(Json.createObjectBuilder().add("error", "Invalid JSON input")
+                            .add("details", e.getMessage())
+                            .build())
                     .build();
         }
     }

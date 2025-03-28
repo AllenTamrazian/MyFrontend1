@@ -31,7 +31,7 @@ public class ScoutingEndPoint {
             int userId = userMark.getInt("userId");
             int imageId = userMark.getInt("imageId");
             int rockCount = userMark.getInt("rockCount");
-            // ✅ JDBC-style upsert logic
+            // JDBC-style upsert logic
             Connection conn = PostgresConnection.getConnection();
             PreparedStatement checkStmt = conn.prepareStatement("SELECT * FROM usermark WHERE userId = ? and imageId = ?");
             checkStmt.setInt(1, userId);
