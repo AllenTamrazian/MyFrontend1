@@ -8,12 +8,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.mindrot.jbcrypt.BCrypt; // For password hashing
 
-import gov.nasa.jpl.common.PostgresConnection;
-
 import java.io.InputStream;
-import java.io.StringReader;
 import java.sql.*;
-import java.util.*;
 
 /**
  * 
@@ -102,6 +98,29 @@ public class UserEndPoint{
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Json.createObjectBuilder().add("error", "Invalid JSON input").build())
                     .build();
+        }
+    }
+
+    @Path("/updateUserReliability")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void updateUserReliability(InputStream reqBody) throws SQLException {
+        try (JsonReader jsonReader = Json.createReader(reqBody)) {
+            JsonObject userJson = jsonReader.readObject();
+            int userId = userJson.getInt("id");
+            int relabilityScore = userJson.getInt("relabilityScore");
+            String sql = "UPDATE users SET relabilityScore = ? WHERE id = ?";
+            try (Connection conn = PostgresConnection.getConnection();) {
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, relabilityScore);
+                stmt.setInt(2, userId);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
