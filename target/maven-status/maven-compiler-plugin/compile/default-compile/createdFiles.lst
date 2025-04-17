@@ -1,4 +1,12 @@
-gov\nasa\jpl\common\PostgresConnection.class
-gov\nasa\jpl\viperws\UserEndPoint.class
-viperws\ImageQuadrant.class
-gov\nasa\jpl\viperws\WSApplication.class
+gov/nasa/jpl/viperws/ImageEndPoint.class
+gov/nasa/jpl/viperws/RockQuadrantEndpoint.class
+gov/nasa/jpl/viperws/AccountEndPoint.class
+gov/nasa/jpl/common/PostgresConnection.class
+gov/nasa/jpl/viperws/WSApplication.class
+gov/nasa/jpl/viperws/ClassifyingEndPoint.class
+gov/nasa/jpl/viperws/ScoutingAnalysisEndPoint.class
+viperws/ImageQuadrant.class
+gov/nasa/jpl/viperws/UserEndPoint.class
+gov/nasa/jpl/viperws/ScoutingEndPoint.class
+gov/nasa/jpl/viperws/SizingEndPoint.class
+gov/nasa/jpl/viperws/SizingAnalysisEndPoint.class

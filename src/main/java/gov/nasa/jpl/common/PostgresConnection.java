@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 
 public class PostgresConnection {
-    private static final String URL = "jdbc:postgresql://localhost:5432/ViperWS";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "123viperr0cks!";
+    private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
+    private static final String USER = "viper";
+    private static final String PASSWORD = "";
     static {
         try {
             Class.forName("org.postgresql.Driver"); // Explicitly load driver

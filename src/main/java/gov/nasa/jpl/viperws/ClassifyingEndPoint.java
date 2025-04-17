@@ -16,56 +16,55 @@ import java.sql.*;
 @Path("/classifying")
 public class ClassifyingEndPoint {
 
+
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRocks(){
-        try(Connection conn = PostgresConnection.getConnection()) {
+    public Response getRocks() {
+        try (Connection conn = PostgresConnection.getConnection()) {
             String sql =
                     "SELECT " +
                             "  \"RockCenter\".id, " +
                             "  ST_AsText(\"RockCenter\".location) AS location, " +
-                            "  ST_AsText(\"RockCenter\".shape) AS shape, " +
-                            "  ST_AsText(ST_LongestLine(\"RockCenter\".location, \"RockCenter\".shape)) AS longest_line_geom, " +
-                            "  ST_Length(ST_LongestLine(\"RockCenter\".location, \"RockCenter\".shape)) AS distance, " +
-                            "  \"image\".id AS imageid, " +
+                            "  \"image\".id AS imageId, " +
                             "  \"image\".imageurl, " +
                             "  \"image\".numquadrants " +
                             "FROM " +
                             "  \"RockCenter\" " +
                             "JOIN " +
-                            "  \"image\" ON \"RockCenter\".imageid = \"image\".id;";
-            try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+                            "  \"image\" ON \"RockCenter\".\"imageId\" = \"image\".id;";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet rs = stmt.executeQuery();
-                JsonArrayBuilder RocksArray = Json.createArrayBuilder();
-                while(rs.next()) {
-                    JsonObjectBuilder RocksObject = Json.createObjectBuilder()
+                JsonArrayBuilder rocksArray = Json.createArrayBuilder();
+                while (rs.next()) {
+                    JsonObjectBuilder rocksObject = Json.createObjectBuilder()
                             .add("id", rs.getLong("id"))
-                            .add("location", rs.getString("location"))
-                            .add("shape", rs.getString("shape"))
-                            .add("longest_line", rs.getString("longest_line_geom"))
-                            .add("distance", rs.getDouble("distance"));
+                            .add("location", rs.getString("location"));
                     JsonObjectBuilder imageBuilder = Json.createObjectBuilder()
-                            .add("id", rs.getInt("imageid"));
-
+                            .add("id", rs.getInt("imageId"));
                     String imageUrl = rs.getString("imageurl");
                     if (imageUrl != null) {
                         imageBuilder.add("imageURL", imageUrl);
                     } else {
                         imageBuilder.add("imageURL", JsonValue.NULL);
                     }
-                    RocksObject.add("image", imageBuilder);
-                    RocksArray.add(RocksObject);
+                    imageBuilder.add("numQuadrants", rs.getInt("numquadrants"));
+                    rocksObject.add("image", imageBuilder);
+                    rocksArray.add(rocksObject);
                 }
                 return Response
-                        .status(Response.Status.CREATED)
-                        .entity(RocksArray.build().toString())
+                        .status(Response.Status.OK)
+                        .entity(rocksArray.build())
                         .type(MediaType.APPLICATION_JSON)
                         .build();
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("SQL Error: " + e.getMessage());
+            return Response
+                    .status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\": \"Database error: " + e.getMessage() + "\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
     }
 }
