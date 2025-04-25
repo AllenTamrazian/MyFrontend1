@@ -49,10 +49,10 @@ public class SizingAnalysisEndPoint {
                     " FROM ClusteredRocks" +
                     " GROUP BY \"imageId\", cluster_id" +
                     "), RockCenter AS (" +
-                    " SELECT \"imageId\", ST_Centroid(merged_drawing) AS rock_center" +
+                    " SELECT \"imageId\", cluster_id, ST_Centroid(merged_drawing) AS rock_center, merged_drawing" +
                     " FROM MergedRocks" +
-                    ") INSERT INTO \"RockCenter\" (\"imageId\", \"location\")" +
-                    " SELECT \"imageId\", rock_center" +
+                    ") INSERT INTO \"RockCenter\" (\"imageId\", \"location\", \"shape\")" +
+                    " SELECT \"imageId\", rock_center, merged_drawing" +
                     " FROM RockCenter" +
                     " ON CONFLICT DO NOTHING;";
 

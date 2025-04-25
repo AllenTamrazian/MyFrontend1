@@ -70,7 +70,7 @@ public class RockQuadrantEndpoint {
             }
 
             return Response
-                    .status(Response.Status.CREATED) // 201
+                    .status(Response.Status.OK) // 201
                     .entity(rockQuadrantsBuilder.build().toString())
                     .type(MediaType.APPLICATION_JSON)
                     .build();
