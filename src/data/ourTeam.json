@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Architecture/design lead",
+    "name": "Hovhannes Babayan",
+    "img": "/OurTeam/hovhannes-babyan.jpg"
+  },
+  {
+    "title": "Project Lead",
+    "name": "Steven Chen",
+    "img": "/OurTeam/steven-chen.jpg"
+  },
+  {
+    "title": "Database Schema lead",
+    "name": "George Ewest",
+    "img": "/OurTeam/george-ewest.jpg"
+  },
+  {
+    "title": "Customer liaison/requirements lead",
+    "name": "Hober Granados",
+    "img": "/OurTeam/hober-granados.jpg"
+  },
+  {
+    "title": "Documentation Lead",
+    "name": "Jaden Lazo",
+    "img": "/OurTeam/jaden-lazo.jpg"
+  },
+  {
+    "title": "Project Consultant",
+    "name": "Jacky Man",
+    "img": "/OurTeam/jacky-man.jpg"
+  },
+  {
+    "title": "Database Schema lead",
+    "name": "Barnabas Novak",
+    "img": "/OurTeam/barnabas-novak.jpg"
+  },
+  {
+    "title": "Backend and component lead",
+    "name": "Nathan Rodriguez-Lyn",
+    "img": "/OurTeam/nathan-rodriguez-lyn.jpg"
+  },
+  {
+    "title": "Presentation Lead",
+    "name": "Allen Tamrazian",
+    "img": "/OurTeam/allen-tamrazian.jpg"
+  },
+  {
+    "title": "UI Lead",
+    "name": "Jordy Ye Cao",
+    "img": "/OurTeam/jordy-ye-cao.jpg"
+  }
+]
